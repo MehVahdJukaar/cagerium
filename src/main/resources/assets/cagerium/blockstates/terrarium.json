@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "cagerium:block/terrarium"
+    }
+  }
+}

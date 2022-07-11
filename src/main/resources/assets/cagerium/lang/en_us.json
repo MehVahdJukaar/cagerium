@@ -1,0 +1,15 @@
+{
+  "item.cagerium.wither_spawn_egg": "Wither Spawn Egg",
+  "item.cagerium.ender_dragon_spawn_egg": "Ender Dragon Spawn Egg",
+  "item.cagerium.iron_golem_spawn_egg": "Iron Golem Spawn Egg",
+  "block.cagerium.cage": "Mob Cage",
+  "block.cagerium.terrarium": "Mob Terrarium",
+  "block.cagerium.cagerium": "Mob Cagerium",
+  "item.cagerium.cage_base": "Cage Base",
+  "item.cagerium.terrarium_base": "Terrarium Base",
+  "item.cagerium.burning_upgrade": "Burning Upgrade",
+  "item.cagerium.capacity_upgrade": "Capacity Upgrade",
+  "tooltip.cagerium.burning": "Burning Upgrade",
+  "tooltip.cagerium.upgrade": "Capacity Upgrade: %s",
+  "tooltip.cagerium.invalid": "Invalid"
+}

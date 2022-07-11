@@ -23,15 +23,15 @@ public class UpgradeItem extends Item {
         super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
         var tag = pStack.getTag();
         boolean hasMob = false;
-        if(tag != null){
-            var s =new ResourceLocation(tag.getString("EntityType"));
+        if (tag != null) {
+            var s = new ResourceLocation(tag.getString("EntityType"));
             var e = Registry.ENTITY_TYPE.getOptional(s);
-            if(e.isPresent()){
+            if (e.isPresent()) {
                 hasMob = true;
                 pTooltipComponents.add(e.get().getDescription());
             }
         }
-        if(!hasMob){
+        if (!hasMob) {
             pTooltipComponents.add(new TranslatableComponent("tooltip.cagerium.invalid").withStyle(ChatFormatting.GRAY));
         }
     }

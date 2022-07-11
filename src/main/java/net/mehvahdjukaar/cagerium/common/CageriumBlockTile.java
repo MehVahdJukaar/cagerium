@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.mehvahdjukaar.cagerium.Cagerium;
+import net.mehvahdjukaar.cagerium.mixins.SlimeInvoker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -18,6 +19,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -262,7 +264,7 @@ public class CageriumBlockTile extends BlockEntity {
     // Gives back a list of items that harvest will yield
     private NonNullList<ItemStack> createDropsList(LivingEntity entity) {
         NonNullList<ItemStack> drops = NonNullList.create();
-        entity.setSecondsOnFire(0);
+
 
         FakePlayer player = FakePlayerFactory.get((ServerLevel) this.level, DUMMY_PROFILE);
         if (this.burning) {
@@ -270,6 +272,10 @@ public class CageriumBlockTile extends BlockEntity {
             EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(Enchantments.FIRE_ASPECT, 1));
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             entity.setSecondsOnFire(1);
+        }
+        //slimes only drop when small...
+        if(entity instanceof SlimeInvoker s){
+            s.invokeSetSize(0,false);
         }
 
         ResourceLocation resourcelocation = entity.getLootTable();
@@ -290,6 +296,10 @@ public class CageriumBlockTile extends BlockEntity {
         for (int i = 0; i < upgradeLevel + 1; i++) {
             drops.addAll(loottable.getRandomItems(ctx));
         }
+        if(entity instanceof SlimeInvoker s){
+            s.invokeSetSize(3,false);
+        }
+        entity.setSecondsOnFire(0);
         return drops;
     }
 

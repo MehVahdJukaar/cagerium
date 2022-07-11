@@ -4,7 +4,6 @@ package net.mehvahdjukaar.cagerium.common;
 import net.mehvahdjukaar.cagerium.client.CageItemRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -16,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.common.util.NonNullLazy;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +33,15 @@ public class CageItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
         var c = pStack.getTagElement("BlockEntityTag");
-        if(c != null){
+        if (c != null) {
             boolean burning = c.getBoolean("Burning");
             byte upgrade = c.getByte("UpgradeLevel");
-            if(burning) pTooltip.add(new TranslatableComponent("tooltip.cagerium.burning").withStyle(ChatFormatting.GRAY));;
-            if(upgrade != 0)       pTooltip.add(new TranslatableComponent("tooltip.cagerium.upgrade", upgrade).withStyle(ChatFormatting.GRAY));;
+            if (burning)
+                pTooltip.add(new TranslatableComponent("tooltip.cagerium.burning").withStyle(ChatFormatting.GRAY));
+
+            if (upgrade != 0)
+                pTooltip.add(new TranslatableComponent("tooltip.cagerium.upgrade", upgrade).withStyle(ChatFormatting.GRAY));
+
         }
         super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
     }

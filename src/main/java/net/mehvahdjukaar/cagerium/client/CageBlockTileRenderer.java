@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.mehvahdjukaar.cagerium.common.CageriumBlockTile;
 import net.mehvahdjukaar.cagerium.common.MobData;
+import net.mehvahdjukaar.cagerium.common.Tier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -43,12 +44,13 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
                        int combinedOverlayIn) {
 
         if (!tile.isEmpty()) {
-            renderMobs(tile::getRenderData, tile.getUpgradeLevel(), partialTicks, poseStack, bufferIn, combinedLightIn, entityRenderer, tile.getDirection());
+            renderMobs(tile::getRenderData,tile.getTier(),
+                    tile.getUpgradeLevel(), partialTicks, poseStack, bufferIn, combinedLightIn, entityRenderer, tile.getDirection());
         }
         var ground = tile.getHabitat();
         if(ground != null){
             poseStack.pushPose();
-            poseStack.translate(2/16f,1/16f+0.005,2/16f);
+            poseStack.translate(2/16f,tile.getTier().getHeight()-1/16f +0.005,2/16f);
             poseStack.scale(12/16f,0.125f, 12/16f);
             renderBlockState(ground, poseStack, bufferIn, blockRenderer,tile.getLevel(), tile.getBlockPos());
             poseStack.popPose();
@@ -67,7 +69,7 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
         poseStack.popPose();
     }
 
-    public static void renderMobs(Function<Integer,MobData> dataGetter,
+    public static void renderMobs(Function<Integer,MobData> dataGetter, Tier tier,
                                   int level, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn,
                                   EntityRenderDispatcher renderDispatcher, Direction direction) {
 
@@ -78,7 +80,7 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
         float s = data0.getScale(level );
         float y = data0.getYOffset(level);
 
-        poseStack.translate(0.5, y+0.125f, 0.5);
+        poseStack.translate(0.5, y+tier.getHeight(), 0.5);
 
 
 

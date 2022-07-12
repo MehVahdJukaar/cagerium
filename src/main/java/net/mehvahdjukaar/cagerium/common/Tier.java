@@ -12,4 +12,8 @@ public enum Tier {
         if (type.getCategory() == MobCategory.MONSTER) return this != PASSIVE;
         return this == PASSIVE;
     }
+
+    public float getHeight() {
+        return this == BOSSES ? 4 / 16f : 2 / 16f;
+    }
 }

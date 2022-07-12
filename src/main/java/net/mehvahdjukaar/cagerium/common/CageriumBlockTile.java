@@ -18,8 +18,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -42,10 +42,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
 public class CageriumBlockTile extends BlockEntity {
 
@@ -62,16 +60,20 @@ public class CageriumBlockTile extends BlockEntity {
     @Nullable
     private BlockState habitat;
 
-    //client only so we can have random mob textures & shit
-    private final Int2ObjectMap<MobData> renderData = new Int2ObjectOpenHashMap<>();
+    //client only so we can have random mob textures & shit. weak so we remove stuff when upgrades are removed
+    private final WeakHashMap<Integer,MobData> renderData = new WeakHashMap<>();
 
     public MobData getRenderData(int index) {
-        return renderData.computeIfAbsent(index,e->MobData.create(this.entityType,this.level));
+        return renderData.computeIfAbsent(index, e -> MobData.create(this.entityType, this.level));
     }
 
     public CageriumBlockTile(BlockPos pos, BlockState state) {
         super(Cagerium.TILE.get(), pos, state);
         this.tier = (state.getBlock() instanceof CageriumBlock cb) ? cb.getTier() : Tier.PASSIVE;
+    }
+
+    public Tier getTier() {
+        return tier;
     }
 
     public void saveToNbt(ItemStack stack) {
@@ -96,11 +98,11 @@ public class CageriumBlockTile extends BlockEntity {
                 Cagerium.LOGGER.warn("Found unknown entity type {} when loading cagerium block entity", res);
             }
         }
-        if(compound.contains("GroundItem")){
-           this.groundItem = ItemStack.of(compound.getCompound("GroundItem"));
-           if(this.groundItem.getItem() instanceof BlockItem bi){
-               this.habitat = bi.getBlock().defaultBlockState();
-           }
+        if (compound.contains("GroundItem")) {
+            this.groundItem = ItemStack.of(compound.getCompound("GroundItem"));
+            if (this.groundItem.getItem() instanceof BlockItem bi) {
+                this.habitat = bi.getBlock().defaultBlockState();
+            }
         }
     }
 
@@ -119,8 +121,8 @@ public class CageriumBlockTile extends BlockEntity {
             compound.putString("EntityType", entityType.getRegistryName().toString());
         }
         //only for block packet
-        if(saveItem && this.groundItem != null){
-            compound.put("GroundItem",  this.groundItem.save(new CompoundTag()));
+        if (saveItem && this.groundItem != null) {
+            compound.put("GroundItem", this.groundItem.save(new CompoundTag()));
         }
     }
 
@@ -154,21 +156,21 @@ public class CageriumBlockTile extends BlockEntity {
     public InteractionResult onInteract(Level world, BlockPos pos, Player player, InteractionHand hand, Direction direction) {
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
-        if(stack.isEmpty()){
-            if(player.isSecondaryUseActive()){
-                if(this.burning){
-                    Block.popResourceFromFace(world,pos,direction,Cagerium.FIRE_UPGRADE.get().getDefaultInstance());
+        if (stack.isEmpty()) {
+            if (player.isSecondaryUseActive()) {
+                if (this.burning) {
+                    Block.popResourceFromFace(world, pos, direction, Cagerium.FIRE_UPGRADE.get().getDefaultInstance());
                     this.burning = false;
                     this.setChanged();
                     world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
                     return InteractionResult.sidedSuccess(world.isClientSide);
-                }else if(this.entityType != null) {
+                } else if (this.entityType != null) {
                     var i = ForgeSpawnEggItem.fromEntityType(this.entityType);
                     if (i != null) {
                         Block.popResourceFromFace(world, pos, direction, i.getDefaultInstance());
-                        if(this.upgradeLevel!=0) {
+                        if (this.upgradeLevel != 0) {
                             this.upgradeLevel--;
-                        }else this.entityType = null;
+                        } else this.entityType = null;
                         this.setChanged();
                         world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
                         return InteractionResult.sidedSuccess(world.isClientSide);
@@ -178,7 +180,7 @@ public class CageriumBlockTile extends BlockEntity {
             return InteractionResult.PASS;
         }
         if (item instanceof SpawnEggItem spawnEggItem) {
-            if(this.entityType == null) {
+            if (this.entityType == null) {
                 EntityType<?> type = spawnEggItem.getType(stack.getTag());
                 if (this.tier.acceptsEntityType(type)) {
                     if (!world.isClientSide) {
@@ -206,14 +208,14 @@ public class CageriumBlockTile extends BlockEntity {
                 }
             }
             return InteractionResult.FAIL;
-        }else if(item == Cagerium.FIRE_UPGRADE.get() && !this.burning){
-            this.burning =true;
+        } else if (item == Cagerium.FIRE_UPGRADE.get() && !this.burning) {
+            this.burning = true;
             this.setChanged();
             world.playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1, 1.2f);
             if (!player.getAbilities().instabuild) stack.shrink(1);
             world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
             return InteractionResult.sidedSuccess(world.isClientSide);
-        }else if(this.groundItem == null && item instanceof BlockItem bi && isValidBlockItem(pos, bi)){
+        } else if (this.groundItem == null && item instanceof BlockItem bi && isValidBlockItem(pos, bi)) {
 
             var s = stack.copy();
             s.setCount(1);
@@ -274,8 +276,8 @@ public class CageriumBlockTile extends BlockEntity {
             entity.setSecondsOnFire(1);
         }
         //slimes only drop when small...
-        if(entity instanceof SlimeInvoker s){
-            s.invokeSetSize(0,false);
+        if (entity instanceof SlimeInvoker s) {
+            s.invokeSetSize(0, false);
         }
 
         ResourceLocation resourcelocation = entity.getLootTable();
@@ -296,8 +298,8 @@ public class CageriumBlockTile extends BlockEntity {
         for (int i = 0; i < upgradeLevel + 1; i++) {
             drops.addAll(loottable.getRandomItems(ctx));
         }
-        if(entity instanceof SlimeInvoker s){
-            s.invokeSetSize(3,false);
+        if (entity instanceof SlimeInvoker s) {
+            s.invokeSetSize(3, false);
         }
         entity.setSecondsOnFire(0);
         return drops;

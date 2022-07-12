@@ -1,14 +1,14 @@
 package net.mehvahdjukaar.cagerium;
 
 import net.mehvahdjukaar.cagerium.common.*;
-import net.mehvahdjukaar.cagerium.common.Tier;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -80,13 +80,15 @@ public class Cagerium {
                     .strength(3f, 6f)
                     .isViewBlocking((s, p, l) -> false)
                     .noOcclusion()
-                    .isRedstoneConductor((s,p,l)->false)
+                    .isRedstoneConductor((s, p, l) -> false)
                     .sound(SoundType.METAL), Tier.MOBS
     ));
 
     public static final RegistryObject<Item> CAGE_ITEM = ITEMS.register(CAGE_NAME, () -> new CageItem(CAGE.get(),
-            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.EPIC)));
+            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.RARE)));
 
+    public static final RegistryObject<Item> CAGE_BASE = ITEMS.register("cage_base", () -> new Item(
+            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.RARE)));
 
     public static final String TERRARIUM_NAME = "terrarium";
 
@@ -95,22 +97,38 @@ public class Cagerium {
                     .strength(2f, 4f)
                     .isViewBlocking((s, p, l) -> false)
                     .noOcclusion()
-                    .isRedstoneConductor((s,p,l)->false)
+                    .isRedstoneConductor((s, p, l) -> false)
                     .sound(SoundType.GLASS), Tier.PASSIVE
     ));
 
     public static final RegistryObject<Item> TERRARIUM_ITEM = ITEMS.register(TERRARIUM_NAME, () -> new CageItem(TERRARIUM.get(),
             new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.RARE)));
 
-
-    public static final RegistryObject<BlockEntityType<CageriumBlockTile>> TILE = TILES.register("cagerium", () -> BlockEntityType.Builder.of(
-            CageriumBlockTile::new, CAGE.get(), TERRARIUM.get()).build(null));
-
-    public static final RegistryObject<Item> CAGE_BASE = ITEMS.register("cage_base", () -> new Item(
-            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.EPIC)));
-
     public static final RegistryObject<Item> TERRARIUM_BASE = ITEMS.register("terrarium_base", () -> new Item(
             new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.RARE)));
+
+
+    public static final String PLATE_NAME = "plate";
+
+    public static final RegistryObject<Block> PLATE = BLOCKS.register(PLATE_NAME, () -> new CageriumBlock(
+            BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL)
+                    .strength(3f, 6f)
+                    .isViewBlocking((s, p, l) -> false)
+                    .noOcclusion()
+                    .isRedstoneConductor((s, p, l) -> false)
+                    .sound(SoundType.STONE), Tier.BOSSES
+    ));
+
+    public static final RegistryObject<Item> PLATE_ITEM = ITEMS.register(PLATE_NAME, () -> new CageItem(PLATE.get(),
+            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.EPIC)));
+
+    public static final RegistryObject<Item> PLATE_GEM = ITEMS.register("binding_gem", () -> new Item(
+            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.EPIC)));
+
+
+    public static final RegistryObject<BlockEntityType<CageriumBlockTile>> TILE = TILES.register("cagerium", () -> BlockEntityType.Builder.of(
+            CageriumBlockTile::new, CAGE.get(), TERRARIUM.get(), PLATE.get()).build(null));
+
 
     public static final RegistryObject<Item> FIRE_UPGRADE = ITEMS.register("burning_upgrade", () -> new Item(
             new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS)));

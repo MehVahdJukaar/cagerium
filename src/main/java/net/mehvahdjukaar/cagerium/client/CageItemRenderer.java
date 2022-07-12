@@ -2,6 +2,7 @@ package net.mehvahdjukaar.cagerium.client;
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.mehvahdjukaar.cagerium.common.CageriumBlock;
 import net.mehvahdjukaar.cagerium.common.MobData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -9,18 +10,14 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
-
-import java.util.UUID;
 
 
 public class CageItemRenderer extends BlockEntityWithoutLevelRenderer {
@@ -48,7 +45,8 @@ public class CageItemRenderer extends BlockEntityWithoutLevelRenderer {
 
             var data = MobData.getOrCreate(id, l, BlockPos.ZERO);
             if (data != null) {
-                CageBlockTileRenderer.renderMobs((h)->data, i, 0, matrixStackIn, bufferIn, combinedLightIn,
+                CageBlockTileRenderer.renderMobs((h) -> data, ((CageriumBlock) state.getBlock()).getTier(),
+                        i, 0, matrixStackIn, bufferIn, combinedLightIn,
                         Minecraft.getInstance().getEntityRenderDispatcher(), Direction.SOUTH);
             }
         }

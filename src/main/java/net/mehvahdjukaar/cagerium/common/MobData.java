@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.datafixers.util.Pair;
+import net.mehvahdjukaar.cagerium.mixins.FoxInvoker;
 import net.mehvahdjukaar.cagerium.mixins.SlimeInvoker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -16,7 +17,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Fox;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.Level;
 
@@ -80,17 +82,17 @@ public class MobData {
         entity.invulnerableTime = 0;
 
         if (entity instanceof Bat bat) {
-            bat.setResting(true);
+            //bat.setResting(true);
         }
-        if (entity instanceof Fox) {
-            // ((Fox) entity).setSleeping(true);
+        if (entity instanceof FoxInvoker foxInvoker) {
+            foxInvoker.invokeSetSleeping(true);
         }
         if (entity instanceof SlimeInvoker slime) {
             slime.invokeSetSize(3, false);
         }
 
         var dim = calculateDimensions(entity, 0.85f, 0.8f, true);
-        var dim1 = calculateDimensions(entity, 0.85f, 0.8f, false);
+        var dim1 = calculateDimensions(entity, 0.585f, 0.8f, false);
         var dim2 = calculateDimensions(entity, 0.5f, 0.7f, true);
 
         return new MobData(entity, dim, dim1, dim2);
@@ -115,7 +117,7 @@ public class MobData {
     }
 
     public float getScale(int level) {
-        return switch (level){
+        return switch (level) {
             default -> halfDimensions.getFirst();
             case 0 -> fullDimensions.getFirst();
             case 1 -> middleDimensions.getFirst();
@@ -123,7 +125,7 @@ public class MobData {
     }
 
     public float getYOffset(int level) {
-        return switch (level){
+        return switch (level) {
             default -> halfDimensions.getSecond();
             case 0 -> fullDimensions.getSecond();
             case 1 -> middleDimensions.getSecond();
@@ -135,6 +137,11 @@ public class MobData {
      */
     private static Pair<Float, Float> calculateDimensions(Entity mob, float width, float height, boolean enlargeAnimals) {
         float babyScale = 1;
+
+        //hack
+        if (Tier.BOSSES.acceptsEntityType(mob.getType())) {
+            width *= 1.25;
+        }
 
         if (mob instanceof LivingEntity le && le.isBaby()) {
             if ((mob instanceof Villager)) babyScale = 1.125f;
@@ -161,9 +168,10 @@ public class MobData {
         float aW = w; //+ cap.getHitBoxWidthIncrement();
         float aH = h; //+ cap.getHitBoxHeightIncrement();
         if (enlargeAnimals && mob instanceof Animal) {
-            aW += 0.4f;
-            aH += 0.125f;
+            aW *= 1.4f;
+            aH *= 1.125f;
         }
+
 
         //1 pixel margin
         float margin = 1 / 16f * 2;
@@ -188,6 +196,12 @@ public class MobData {
 
         if (mob instanceof Bat) {
             yOffset *= 1.5f;
+        } else if (mob instanceof EnderDragon) {
+            scale *= 2;
+            yOffset *= 2;
+        } else if (mob instanceof WitherBoss) {
+            scale *= 1.5f;
+            yOffset *= 0.9125;
         }
 
         return Pair.of(scale, yOffset);

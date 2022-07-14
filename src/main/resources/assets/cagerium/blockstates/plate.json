@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "cagerium:block/plate"
+    },
+    "facing=east": {
+      "model": "cagerium:block/plate",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "cagerium:block/plate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "cagerium:block/plate",
+      "y": 270
     }
   }
 }

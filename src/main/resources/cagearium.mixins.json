@@ -6,6 +6,7 @@
   "refmap": "cagerium.refmap.json",
   "package": "net.mehvahdjukaar.cagerium.mixins",
   "mixins": [
+    "FoxInvoker",
     "SlimeInvoker"
   ],
   "client": [

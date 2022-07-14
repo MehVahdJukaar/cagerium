@@ -1,6 +1,7 @@
 package net.mehvahdjukaar.cagerium.common;
 
 
+import net.mehvahdjukaar.cagerium.CageriumClient;
 import net.mehvahdjukaar.cagerium.client.CageItemRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -54,20 +55,9 @@ public class CageItem extends BlockItem {
 
     @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        registerISTER(consumer, CageItemRenderer::new);
+        CageriumClient.registerISTER(consumer, CageItemRenderer::new);
     }
 
-    public static void registerISTER(Consumer<IItemRenderProperties> consumer, BiFunction<BlockEntityRenderDispatcher, EntityModelSet, BlockEntityWithoutLevelRenderer> factory) {
-        consumer.accept(new IItemRenderProperties() {
-            final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(
-                    () -> factory.apply(Minecraft.getInstance().getBlockEntityRenderDispatcher(),
-                            Minecraft.getInstance().getEntityModels()));
 
-            @Override
-            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
-                return renderer.get();
-            }
-        });
-    }
 
 }

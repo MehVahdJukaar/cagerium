@@ -17,10 +17,10 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ForgeHooksClient;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -44,15 +44,15 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
                        int combinedOverlayIn) {
 
         if (!tile.isEmpty()) {
-            renderMobs(tile::getRenderData,tile.getTier(),
+            renderMobs(tile::getRenderData, tile.getTier(),
                     tile.getUpgradeLevel(), partialTicks, poseStack, bufferIn, combinedLightIn, entityRenderer, tile.getDirection());
         }
         var ground = tile.getHabitat();
-        if(ground != null){
+        if (ground != null) {
             poseStack.pushPose();
-            poseStack.translate(2/16f,tile.getTier().getHeight()-1/16f +0.005,2/16f);
-            poseStack.scale(12/16f,0.125f, 12/16f);
-            renderBlockState(ground, poseStack, bufferIn, blockRenderer,tile.getLevel(), tile.getBlockPos());
+            poseStack.translate(2 / 16f, tile.getTier().getHeight() - 1 / 16f + 0.005, 2 / 16f);
+            poseStack.scale(12 / 16f, 0.125f, 12 / 16f);
+            renderBlockState(ground, poseStack, bufferIn, blockRenderer, tile.getLevel(), tile.getBlockPos());
             poseStack.popPose();
         }
 
@@ -69,7 +69,7 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
         poseStack.popPose();
     }
 
-    public static void renderMobs(Function<Integer,MobData> dataGetter, Tier tier,
+    public static void renderMobs(Function<Integer, MobData> dataGetter, Tier tier,
                                   int level, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn,
                                   EntityRenderDispatcher renderDispatcher, Direction direction) {
 
@@ -77,48 +77,47 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
 
         var data0 = dataGetter.apply(0);
 
-        float s = data0.getScale(level );
+        float s = data0.getScale(level);
         float y = data0.getYOffset(level);
 
-        poseStack.translate(0.5, y+tier.getHeight(), 0.5);
-
+        poseStack.translate(0.5, y + tier.getHeight(), 0.5);
 
 
         Entity entity0 = data0.getEntity();
 
-        poseStack.mulPose(Vector3f.YN.rotationDegrees(direction.toYRot()));
+        poseStack.mulPose(Vector3f.YN.rotationDegrees(direction.toYRot() + ((entity0 instanceof EnderDragon) ? 180 : 0)));
         float d = 0.2325f;
         switch (level) {
-            default -> renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s,renderDispatcher);
+            default -> renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s, renderDispatcher);
             case 1 -> {
                 poseStack.translate(d, 0, 0);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s,renderDispatcher);
-                poseStack.translate(-2*d, 0, 0);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s, renderDispatcher);
+                poseStack.translate(-2 * d, 0, 0);
                 var data1 = dataGetter.apply(1);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data1.getEntity(), s,renderDispatcher);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data1.getEntity(), s, renderDispatcher);
             }
-            case 2->{
+            case 2 -> {
                 poseStack.translate(0, 0, d);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s,renderDispatcher);
-                poseStack.translate(-0.866*d, 0, -1.5*d);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s, renderDispatcher);
+                poseStack.translate(-0.866 * d, 0, -1.5 * d);
                 var data1 = dataGetter.apply(1);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data1.getEntity(), s,renderDispatcher);
-                poseStack.translate(2*0.866*d, 0, 0);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data1.getEntity(), s, renderDispatcher);
+                poseStack.translate(2 * 0.866 * d, 0, 0);
                 var data2 = dataGetter.apply(1);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data2.getEntity(), s,renderDispatcher);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data2.getEntity(), s, renderDispatcher);
             }
-            case 3->{
+            case 3 -> {
                 poseStack.translate(d, 0, d);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s,renderDispatcher);
-                poseStack.translate(-2*d, 0, 0);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s, renderDispatcher);
+                poseStack.translate(-2 * d, 0, 0);
                 var data1 = dataGetter.apply(1);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data1.getEntity(), s,renderDispatcher);
-                poseStack.translate(0, 0, -2*d);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data1.getEntity(), s, renderDispatcher);
+                poseStack.translate(0, 0, -2 * d);
                 var data2 = dataGetter.apply(1);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data2.getEntity(), s,renderDispatcher);
-                poseStack.translate(2*d, 0, 0);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data2.getEntity(), s, renderDispatcher);
+                poseStack.translate(2 * d, 0, 0);
                 var data3 = dataGetter.apply(1);
-                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data3.getEntity(), s,renderDispatcher);
+                renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, data3.getEntity(), s, renderDispatcher);
             }
         }
         poseStack.popPose();

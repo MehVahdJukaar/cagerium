@@ -47,7 +47,7 @@ public class CageItemRenderer extends BlockEntityWithoutLevelRenderer {
             if (data != null) {
                 CageBlockTileRenderer.renderMobs((h) -> data, ((CageriumBlock) state.getBlock()).getTier(),
                         i, 0, matrixStackIn, bufferIn, combinedLightIn,
-                        Minecraft.getInstance().getEntityRenderDispatcher(), Direction.SOUTH);
+                        Minecraft.getInstance().getEntityRenderDispatcher(), Direction.NORTH);
             }
         }
 

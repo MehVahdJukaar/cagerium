@@ -2,6 +2,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "cagerium:item/fire_upgrade"
+    "layer0": "cagerium:item/upgrade"
   }
 }

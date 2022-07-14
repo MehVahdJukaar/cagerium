@@ -1,8 +1,6 @@
 package net.mehvahdjukaar.cagerium.common;
 
 import com.mojang.authlib.GameProfile;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.mehvahdjukaar.cagerium.Cagerium;
 import net.mehvahdjukaar.cagerium.mixins.SlimeInvoker;
 import net.minecraft.core.BlockPos;
@@ -20,6 +18,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -61,7 +60,7 @@ public class CageriumBlockTile extends BlockEntity {
     private BlockState habitat;
 
     //client only so we can have random mob textures & shit. weak so we remove stuff when upgrades are removed
-    private final WeakHashMap<Integer,MobData> renderData = new WeakHashMap<>();
+    private final WeakHashMap<Integer, MobData> renderData = new WeakHashMap<>();
 
     public MobData getRenderData(int index) {
         return renderData.computeIfAbsent(index, e -> MobData.create(this.entityType, this.level));
@@ -104,6 +103,7 @@ public class CageriumBlockTile extends BlockEntity {
                 this.habitat = bi.getBlock().defaultBlockState();
             }
         }
+        if (this.entityType == null) renderData.clear();
     }
 
     @Override
@@ -142,11 +142,19 @@ public class CageriumBlockTile extends BlockEntity {
 
     public static void tick(Level pLevel, BlockPos pPos, BlockState pState, CageriumBlockTile tile) {
         if (!pLevel.isClientSide) {
-            if (tile.tickCount++ >= Cagerium.TICKS_TO_DROP_LOOT.get()) {
+            if (tile.tickCount++ >= tile.getTickToDrop()) {
                 tile.tickCount = 0;
                 tile.tryDropLoot();
             }
         }
+    }
+
+    private int getTickToDrop() {
+        return switch (this.tier) {
+            case PASSIVE -> Cagerium.TICKS_TO_DROP_LOOT_0.get();
+            case MOBS -> Cagerium.TICKS_TO_DROP_LOOT_1.get();
+            case BOSSES -> Cagerium.TICKS_TO_DROP_LOOT_2.get();
+        };
     }
 
     public boolean isEmpty() {
@@ -251,6 +259,9 @@ public class CageriumBlockTile extends BlockEntity {
                 IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).orElse(null);
                 if (itemHandler != null) {
                     var loot = this.createDropsList(livingEntity);
+                    if (livingEntity instanceof WitherBoss) {
+                        loot.add(Items.NETHER_STAR.getDefaultInstance());
+                    }
                     loot.forEach(s -> ItemHandlerHelper.insertItem(itemHandler, s, false));
                 }
             }

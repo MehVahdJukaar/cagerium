@@ -36,7 +36,7 @@ import java.util.Random;
 
 public class CageriumBlock extends Block implements EntityBlock {
 
-    protected static final VoxelShape SHAPE = Shapes.block();
+    protected final VoxelShape SHAPE;
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     private final Tier tier;
@@ -46,6 +46,9 @@ public class CageriumBlock extends Block implements EntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
         this.tier = tier;
+        if(tier==Tier.BOSSES){
+            SHAPE = Block.box(0,0,0,16,5,16);
+        }else SHAPE = Shapes.block();
     }
 
     public Tier getTier() {

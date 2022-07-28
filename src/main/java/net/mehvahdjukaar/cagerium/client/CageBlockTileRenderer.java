@@ -47,7 +47,7 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
             renderMobs(tile::getRenderData, tile.getTier(),
                     tile.getUpgradeLevel(), partialTicks, poseStack, bufferIn, combinedLightIn, entityRenderer, tile.getDirection());
         }
-        var ground = tile.getHabitat();
+        var ground = tile.getGroundState();
         if (ground != null) {
             poseStack.pushPose();
             poseStack.translate(2 / 16f, tile.getTier().getHeight() - 1 / 16f + 0.005, 2 / 16f);

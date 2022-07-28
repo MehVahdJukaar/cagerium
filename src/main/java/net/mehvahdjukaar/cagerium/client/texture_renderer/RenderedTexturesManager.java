@@ -13,6 +13,7 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
+import net.mehvahdjukaar.cagerium.Cagerium;
 import net.mehvahdjukaar.cagerium.common.MobData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -84,7 +85,7 @@ public class RenderedTexturesManager {
                     t.upload();
                 }
             };
-            REQUESTED_FOR_RENDERING.add(new RenderingData(res, factory, true));
+            REQUESTED_FOR_RENDERING.add(new RenderingData(res, factory, false));
             return null;
         }
         return texture;
@@ -151,6 +152,10 @@ public class RenderedTexturesManager {
         //render stuff
         var data = MobData.getOrCreate(id, DummyWorld.INSTANCE, BlockPos.ZERO);
         if (data != null) {
+            if(data.getEntity()==null){
+                Cagerium.LOGGER.warn("Trying to render null entity for cagerium upgrade. skipping");
+                return;
+            }
             posestack.pushPose();
 
 
@@ -174,6 +179,8 @@ public class RenderedTexturesManager {
 
             float s = data.getScale(0);
             float y = data.getYOffset(0);
+
+            s*=16/12f;
 
             modelStack.translate(0, y - 0.5D, 0);
 

@@ -69,7 +69,7 @@ public class UpgradeItemRenderer extends BlockEntityWithoutLevelRenderer {
             float offset = 1 / 30f;
             float z1 = 0.5f + offset;
             float z2 = 0.5f - offset;
-            float s = 0.5f;
+            float s = 0.5f*12/16f;
             poseStack.translate(0.5, 0.5, 0);
 
             vertexConsumer.vertex(tr, -s, s, z1).color(1f, 1f, 1f, 1f).uv(0f, 1f).overlayCoords(overlay).uv2(light).normal(normal, 0f, 0f, 1f).endVertex();

@@ -20,7 +20,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -56,7 +55,8 @@ public class CageriumClient {
         @SubscribeEvent
         public static void tick(TickEvent.RenderTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
-                RenderedTexturesManager.updateTextures();
+                if (Minecraft.getInstance().level != null)
+                    RenderedTexturesManager.updateTextures();
             }
         }
     }

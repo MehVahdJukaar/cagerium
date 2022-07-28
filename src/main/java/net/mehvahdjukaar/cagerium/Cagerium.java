@@ -3,7 +3,6 @@ package net.mehvahdjukaar.cagerium;
 import net.mehvahdjukaar.cagerium.common.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -18,7 +17,8 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.event.AddPackFindersEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -74,6 +74,12 @@ public class Cagerium {
         TICKS_TO_DROP_LOOT_2 = builder.defineInRange("plate_ticks_to_drop", 300, 1, 100000);
         SERVER_SPEC = builder.build();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SERVER_SPEC);
+
+        MinecraftForge.EVENT_BUS.addListener(Cagerium::addReloadListener);
+    }
+
+    public static void addReloadListener(AddReloadListenerEvent event) {
+       // event.addListener(new CustomCageriumLootTables(event.getServerResources().getPredicateManager()));
     }
 
     public static final RegistryObject<RecipeSerializer<?>> UPGRADE_RECIPE = RECIPES.register(

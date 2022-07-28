@@ -57,7 +57,7 @@ public class CageriumBlockTile extends BlockEntity {
     private ItemStack groundItem;
 
     @Nullable
-    private BlockState habitat;
+    private BlockState groundState;
 
     //client only so we can have random mob textures & shit. weak so we remove stuff when upgrades are removed
     private final WeakHashMap<Integer, MobData> renderData = new WeakHashMap<>();
@@ -100,7 +100,7 @@ public class CageriumBlockTile extends BlockEntity {
         if (compound.contains("GroundItem")) {
             this.groundItem = ItemStack.of(compound.getCompound("GroundItem"));
             if (this.groundItem.getItem() instanceof BlockItem bi) {
-                this.habitat = bi.getBlock().defaultBlockState();
+                this.groundState = bi.getBlock().defaultBlockState();
             }
         }
         if (this.entityType == null) renderData.clear();
@@ -291,8 +291,15 @@ public class CageriumBlockTile extends BlockEntity {
             s.invokeSetSize(0, false);
         }
 
-        ResourceLocation resourcelocation = entity.getLootTable();
-        LootTable loottable = this.level.getServer().getLootTables().get(resourcelocation);
+
+        LootTable loottable;
+        var tables = this.level.getServer().getLootTables();
+        var type = entity.getType().getRegistryName();
+        loottable = tables.get(new ResourceLocation(type.getNamespace(), Cagerium.MOD_ID + "/" + type.getPath()));
+        //loottable = CustomCageriumLootTables.getCustomLoot(entity.getType());
+        if (loottable == LootTable.EMPTY) {
+            loottable = tables.get(entity.getLootTable());
+        }
 
         LootContext.Builder builder = (new LootContext.Builder((ServerLevel) this.level))
                 .withRandom(this.level.getRandom())
@@ -332,8 +339,8 @@ public class CageriumBlockTile extends BlockEntity {
         return this.groundItem;
     }
 
-    public BlockState getHabitat() {
-        return habitat;
+    public BlockState getGroundState() {
+        return groundState;
     }
 
 

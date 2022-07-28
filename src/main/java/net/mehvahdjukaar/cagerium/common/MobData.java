@@ -92,8 +92,8 @@ public class MobData {
         }
 
         var dim = calculateDimensions(entity, 0.85f, 0.8f, true);
-        var dim1 = calculateDimensions(entity, 0.585f, 0.8f, false);
-        var dim2 = calculateDimensions(entity, 0.5f, 0.7f, true);
+        var dim1 = calculateDimensions(entity, 0.55f, 0.8f, false);
+        var dim2 = calculateDimensions(entity, 0.475f, 0.7f, true);
 
         return new MobData(entity, dim, dim1, dim2);
 

@@ -285,6 +285,8 @@ public class CageriumBlockTile extends BlockEntity {
             EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(Enchantments.FIRE_ASPECT, 1));
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             entity.setSecondsOnFire(1);
+        }else{
+            player.setItemInhand(InteractionHand.MAIN_HAND, ItemStack.empty());
         }
         //slimes only drop when small...
         if (entity instanceof SlimeInvoker s) {

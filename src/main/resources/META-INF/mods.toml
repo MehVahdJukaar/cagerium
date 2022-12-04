@@ -13,13 +13,9 @@ version="${file.jarVersion}" #mandatory
 
 displayName="cagerium" #mandatory
 
-updateJSONURL="http://myurl.me/" #optional
-
-logoFile="logo.png" #optional
-
 authors="MehVahdJukaar" #optional
 
-description='''Compact Farms'''
+description='''Compact Mob Farms'''
 
 
 [[dependencies.cagerium]] #optional

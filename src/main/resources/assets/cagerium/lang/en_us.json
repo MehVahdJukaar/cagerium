@@ -2,6 +2,8 @@
   "item.cagerium.wither_spawn_egg": "Wither Spawn Egg",
   "item.cagerium.ender_dragon_spawn_egg": "Ender Dragon Spawn Egg",
   "item.cagerium.iron_golem_spawn_egg": "Iron Golem Spawn Egg",
+  "item.cagerium.skeleton_key": "Skeleton Key",
+  "tooltip.cagerium.skeleton_key": "Used to remove a cagerium upgrade",
   "block.cagerium.cage": "Mob Cage",
   "block.cagerium.plate": "Binding Plate",
   "block.cagerium.terrarium": "Mob Terrarium",

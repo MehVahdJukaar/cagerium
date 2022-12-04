@@ -6,7 +6,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -34,11 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CageriumBlock extends Block implements EntityBlock {
-
-    protected final VoxelShape SHAPE;
+public class CageriumBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+
+    protected final VoxelShape shape;
     private final Tier tier;
 
 
@@ -46,9 +46,9 @@ public class CageriumBlock extends Block implements EntityBlock {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
         this.tier = tier;
-        if(tier==Tier.BOSSES){
-            SHAPE = Block.box(0,0,0,16,5,16);
-        }else SHAPE = Shapes.block();
+        if (tier == Tier.BOSSES) {
+            shape = Block.box(0, 0, 0, 16, 5, 16);
+        } else shape = Shapes.block();
     }
 
     public Tier getTier() {
@@ -111,18 +111,12 @@ public class CageriumBlock extends Block implements EntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        return shape;
     }
 
     @Override
     public PushReaction getPistonPushReaction(BlockState state) {
         return PushReaction.DESTROY;
-    }
-
-    @Override
-    public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos) {
-        BlockEntity tileEntity = worldIn.getBlockEntity(pos);
-        return tileEntity instanceof MenuProvider ? (MenuProvider) tileEntity : null;
     }
 
     @Nullable
@@ -157,11 +151,7 @@ public class CageriumBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return getTicker(pBlockEntityType, Cagerium.TILE.get(), CageriumBlockTile::tick);
-    }
-
-    public static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> getTicker(BlockEntityType<A> type, BlockEntityType<E> targetType, BlockEntityTicker<? super E> ticker) {
-        return targetType == type ? (BlockEntityTicker<A>) ticker : null;
+        return createTickerHelper(pBlockEntityType, Cagerium.TILE.get(), CageriumBlockTile::tick);
     }
 
     @Override

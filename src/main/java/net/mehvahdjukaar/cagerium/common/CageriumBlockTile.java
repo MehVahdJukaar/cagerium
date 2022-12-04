@@ -17,6 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
@@ -172,24 +173,13 @@ public class CageriumBlockTile extends BlockEntity {
                     this.setChanged();
                     world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
                     return InteractionResult.sidedSuccess(world.isClientSide);
-                } else if (this.entityType != null) {
-                    var i = ForgeSpawnEggItem.fromEntityType(this.entityType);
-                    if (i != null) {
-                        Block.popResourceFromFace(world, pos, direction, i.getDefaultInstance());
-                        if (this.upgradeLevel != 0) {
-                            this.upgradeLevel--;
-                        } else this.entityType = null;
-                        this.setChanged();
-                        world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
-                        return InteractionResult.sidedSuccess(world.isClientSide);
-                    }
                 }
             }
             return InteractionResult.PASS;
         }
         if (item instanceof SpawnEggItem spawnEggItem) {
+            EntityType<?> type = spawnEggItem.getType(stack.getTag());
             if (this.entityType == null) {
-                EntityType<?> type = spawnEggItem.getType(stack.getTag());
                 if (this.tier.acceptsEntityType(type)) {
                     if (!world.isClientSide) {
                         this.entityType = type;
@@ -200,13 +190,8 @@ public class CageriumBlockTile extends BlockEntity {
                     }
                     return InteractionResult.sidedSuccess(world.isClientSide);
                 }
-            }
-            return InteractionResult.CONSUME_PARTIAL;
-        } else if (item == Cagerium.CAGE_UPGRADE.get() && this.entityType != null && this.upgradeLevel < 3) {
-            var c = stack.getTag();
-            if (c != null) {
-                ResourceLocation res = new ResourceLocation(c.getString("EntityType"));
-                if (res.equals(entityType.getRegistryName())) {
+            } else if (this.upgradeLevel < 3) {
+                if (type == entityType) {
                     this.upgradeLevel++;
                     this.setChanged();
                     world.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.PLAYERS, 1, 1.2f);
@@ -215,6 +200,35 @@ public class CageriumBlockTile extends BlockEntity {
                     return InteractionResult.sidedSuccess(world.isClientSide);
                 }
             }
+            return InteractionResult.CONSUME_PARTIAL;
+        } else if (item == Cagerium.CAGE_KEY.get()) {
+
+            if (this.entityType != null) {
+                var i = ForgeSpawnEggItem.fromEntityType(this.entityType);
+                if (i != null) {
+                    Block.popResourceFromFace(world, pos, direction, i.getDefaultInstance());
+                    if (this.upgradeLevel != 0) {
+                        this.upgradeLevel--;
+                    } else this.entityType = null;
+                    this.setChanged();
+                    world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
+                    if (!player.isCreative()) {
+                        stack.shrink(1);
+                        player.broadcastBreakEvent(hand);
+                    }
+                    return InteractionResult.sidedSuccess(world.isClientSide);
+                }
+            } else if (this.burning) {
+                Block.popResourceFromFace(world, pos, direction, Cagerium.FIRE_UPGRADE.get().getDefaultInstance());
+                this.burning = false;
+                this.setChanged();
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                    player.broadcastBreakEvent(hand);
+                }
+                return InteractionResult.sidedSuccess(world.isClientSide);
+            }
+
             return InteractionResult.FAIL;
         } else if (item == Cagerium.FIRE_UPGRADE.get() && !this.burning) {
             this.burning = true;
@@ -285,8 +299,8 @@ public class CageriumBlockTile extends BlockEntity {
             EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(Enchantments.FIRE_ASPECT, 1));
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             entity.setSecondsOnFire(1);
-        }else{
-            player.setItemInhand(InteractionHand.MAIN_HAND, ItemStack.empty());
+        } else {
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
         //slimes only drop when small...
         if (entity instanceof SlimeInvoker s) {

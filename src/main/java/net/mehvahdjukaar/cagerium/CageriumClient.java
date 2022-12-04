@@ -2,7 +2,6 @@ package net.mehvahdjukaar.cagerium;
 
 import net.mehvahdjukaar.cagerium.client.CageBlockTileRenderer;
 import net.mehvahdjukaar.cagerium.client.texture_renderer.RenderedTexturesManager;
-import net.mehvahdjukaar.cagerium.delete.MagnetTableScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -36,9 +35,6 @@ public class CageriumClient {
 
             ItemBlockRenderTypes.setRenderLayer(Cagerium.CAGE.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(Cagerium.TERRARIUM.get(), RenderType.translucent());
-
-            MenuScreens.register(Cagerium.MAGNET_TABLE_CONTAINER.get(), MagnetTableScreen::new);
-
         });
     }
 

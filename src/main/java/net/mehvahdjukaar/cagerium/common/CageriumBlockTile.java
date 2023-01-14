@@ -20,6 +20,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -166,15 +167,6 @@ public class CageriumBlockTile extends BlockEntity {
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
         if (stack.isEmpty()) {
-            if (player.isSecondaryUseActive()) {
-                if (this.burning) {
-                    Block.popResourceFromFace(world, pos, direction, Cagerium.FIRE_UPGRADE.get().getDefaultInstance());
-                    this.burning = false;
-                    this.setChanged();
-                    world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
-                    return InteractionResult.sidedSuccess(world.isClientSide);
-                }
-            }
             return InteractionResult.PASS;
         }
         if (item instanceof SpawnEggItem spawnEggItem) {
@@ -222,10 +214,12 @@ public class CageriumBlockTile extends BlockEntity {
                 Block.popResourceFromFace(world, pos, direction, Cagerium.FIRE_UPGRADE.get().getDefaultInstance());
                 this.burning = false;
                 this.setChanged();
+                world.sendBlockUpdated(pos, this.getBlockState(), this.getBlockState(), 3);
                 if (!player.isCreative()) {
                     stack.shrink(1);
                     player.broadcastBreakEvent(hand);
                 }
+
                 return InteractionResult.sidedSuccess(world.isClientSide);
             }
 
@@ -273,9 +267,7 @@ public class CageriumBlockTile extends BlockEntity {
                 IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).orElse(null);
                 if (itemHandler != null) {
                     var loot = this.createDropsList(livingEntity);
-                    if (livingEntity instanceof WitherBoss) {
-                        loot.add(Items.NETHER_STAR.getDefaultInstance());
-                    }
+
                     loot.forEach(s -> ItemHandlerHelper.insertItem(itemHandler, s, false));
                 }
             }
@@ -303,7 +295,7 @@ public class CageriumBlockTile extends BlockEntity {
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
         //slimes only drop when small...
-        if (entity instanceof SlimeInvoker s) {
+        if (entity instanceof SlimeInvoker s &&!(entity instanceof MagmaCube)) {
             s.invokeSetSize(0, false);
         }
 
@@ -312,7 +304,7 @@ public class CageriumBlockTile extends BlockEntity {
         var tables = this.level.getServer().getLootTables();
         var type = entity.getType().getRegistryName();
         loottable = tables.get(new ResourceLocation(type.getNamespace(), Cagerium.MOD_ID + "/" + type.getPath()));
-        //loottable = CustomCageriumLootTables.getCustomLoot(entity.getType());
+
         if (loottable == LootTable.EMPTY) {
             loottable = tables.get(entity.getLootTable());
         }
@@ -332,10 +324,16 @@ public class CageriumBlockTile extends BlockEntity {
         for (int i = 0; i < upgradeLevel + 1; i++) {
             drops.addAll(loottable.getRandomItems(ctx));
         }
+
+        entity.setSecondsOnFire(0);
+
         if (entity instanceof SlimeInvoker s) {
             s.invokeSetSize(3, false);
         }
-        entity.setSecondsOnFire(0);
+        if (entity instanceof WitherBoss) {
+            drops.add(Items.NETHER_STAR.getDefaultInstance());
+        }
+
         return drops;
     }
 

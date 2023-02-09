@@ -5,7 +5,11 @@
     "minecraft:ender_dragon",
     "minecraft:elder_guardian",
     "minecraft:iron_golem",
-    "minecraft:ravager"
+    "minecraft:ravager",
+    "aquamirae:maze_mother",
+    "aquamirae:captain_cornelia",
+    "alexsmobs:void_worm",
+    "majruszsdifficulty:tank"
   ]
 }
 

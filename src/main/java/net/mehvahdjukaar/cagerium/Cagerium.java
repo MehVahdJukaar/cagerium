@@ -37,6 +37,7 @@ public class Cagerium {
 
     public static final Logger LOGGER = LogManager.getLogger();
     public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, res("bosses"));
+    public static final TagKey<EntityType<?>> BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, res("cagerium_blacklist"));
 
     public static ResourceLocation res(String n) {
         return new ResourceLocation(MOD_ID, n);

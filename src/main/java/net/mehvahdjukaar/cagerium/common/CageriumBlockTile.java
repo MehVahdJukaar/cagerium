@@ -181,7 +181,7 @@ public class CageriumBlockTile extends BlockEntity {
                         if (!player.getAbilities().instabuild) stack.shrink(1);
                     }
                     return InteractionResult.sidedSuccess(world.isClientSide);
-                }
+                }//TODO: feedback interaction line
             } else if (this.upgradeLevel < 3) {
                 if (type == entityType) {
                     this.upgradeLevel++;
@@ -292,6 +292,7 @@ public class CageriumBlockTile extends BlockEntity {
             player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             entity.setSecondsOnFire(1);
         } else {
+            entity.clearFire();
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
         //slimes only drop when small...

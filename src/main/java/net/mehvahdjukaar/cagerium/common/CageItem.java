@@ -1,14 +1,17 @@
 package net.mehvahdjukaar.cagerium.common;
 
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.mehvahdjukaar.cagerium.CageriumClient;
 import net.mehvahdjukaar.cagerium.client.CageItemRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -34,6 +37,10 @@ public class CageItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
         var c = pStack.getTagElement("BlockEntityTag");
+        if( InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(),  Minecraft.getInstance().options.keyShift.getKey().getValue())){
+            pTooltip.add(new TextComponent("aaaa"));
+        }
+
         if (c != null) {
             boolean burning = c.getBoolean("Burning");
             byte upgrade = c.getByte("UpgradeLevel");

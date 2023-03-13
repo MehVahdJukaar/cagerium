@@ -6,10 +6,22 @@
     "minecraft:elder_guardian",
     "minecraft:iron_golem",
     "minecraft:ravager",
-    "aquamirae:maze_mother",
-    "aquamirae:captain_cornelia",
-    "rottencreatures:dead_beard",
-    "alexsmobs:void_worm"
+    {
+      "required": false,
+      "id": "aquamirae:maze_mother"
+    },
+    {
+      "required": false,
+      "id": "aquamirae:captain_cornelia"
+    },
+    {
+      "required": false,
+      "id": "alexsmobs:void_worm"
+    },
+    {
+      "required": false,
+      "id": "rottencreatures:dead_beard"
+    }
   ]
 }
 

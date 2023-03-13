@@ -77,6 +77,8 @@ public class Cagerium {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SERVER_SPEC);
 
         MinecraftForge.EVENT_BUS.addListener(Cagerium::addReloadListener);
+
+        //TODO: water in terrarium
     }
 
     public static void addReloadListener(AddReloadListenerEvent event) {

@@ -7,6 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -17,7 +19,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.MagmaCube;
@@ -181,7 +182,10 @@ public class CageriumBlockTile extends BlockEntity {
                         if (!player.getAbilities().instabuild) stack.shrink(1);
                     }
                     return InteractionResult.sidedSuccess(world.isClientSide);
-                }//TODO: feedback interaction line
+                }else{
+                    player.displayClientMessage(new TextComponent("Does not fit in here"), true);
+                    return InteractionResult.sidedSuccess(world.isClientSide);
+                }
             } else if (this.upgradeLevel < 3) {
                 if (type == entityType) {
                     this.upgradeLevel++;
@@ -296,7 +300,7 @@ public class CageriumBlockTile extends BlockEntity {
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
         //slimes only drop when small...
-        if (entity instanceof SlimeInvoker s &&!(entity instanceof MagmaCube)) {
+        if (entity instanceof SlimeInvoker s && !(entity instanceof MagmaCube)) {
             s.invokeSetSize(0, false);
         }
 
@@ -332,7 +336,9 @@ public class CageriumBlockTile extends BlockEntity {
             s.invokeSetSize(3, false);
         }
         if (entity instanceof WitherBoss) {
-            drops.add(Items.NETHER_STAR.getDefaultInstance());
+            for (int i = 0; i < upgradeLevel + 1; i++) {
+                drops.add(Items.NETHER_STAR.getDefaultInstance());
+            }
         }
 
         return drops;

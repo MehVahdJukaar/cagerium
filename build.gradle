@@ -133,12 +133,13 @@ dependencies {
     minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 
 
+    /*
     implementation fg.deobf("curse.maven:jei-238222:3682513")
     implementation fg.deobf("curse.maven:jade-324717:3681449")
     implementation fg.deobf("curse.maven:torohealth-damage-indicators-245733:3555685")
     implementation fg.deobf("curse.maven:configured-457570:3640884")
     implementation fg.deobf("curse.maven:rotten-creatures-371033:4060906")
-
+    */
 
     annotationProcessor "org.spongepowered:mixin:${project.mixin_version}:processor"
 }

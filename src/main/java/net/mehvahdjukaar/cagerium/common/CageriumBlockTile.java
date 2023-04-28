@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -182,7 +181,7 @@ public class CageriumBlockTile extends BlockEntity {
                         if (!player.getAbilities().instabuild) stack.shrink(1);
                     }
                     return InteractionResult.sidedSuccess(world.isClientSide);
-                }else{
+                } else {
                     player.displayClientMessage(new TextComponent("Does not fit in here"), true);
                     return InteractionResult.sidedSuccess(world.isClientSide);
                 }
@@ -327,7 +326,12 @@ public class CageriumBlockTile extends BlockEntity {
         LootContext ctx = builder.create(LootContextParamSets.ENTITY);
 
         for (int i = 0; i < upgradeLevel + 1; i++) {
-            drops.addAll(loottable.getRandomItems(ctx));
+            if (entity instanceof WitherBoss) {
+                drops.add(Items.NETHER_STAR.getDefaultInstance());
+            } else if (entity.getType() == EntityType.MAGMA_CUBE) { //some issue specific to vh... idk
+                drops.add(Items.MAGMA_CREAM.getDefaultInstance());
+            } else drops.addAll(loottable.getRandomItems(ctx));
+
         }
 
         entity.setSecondsOnFire(0);
@@ -335,11 +339,7 @@ public class CageriumBlockTile extends BlockEntity {
         if (entity instanceof SlimeInvoker s) {
             s.invokeSetSize(3, false);
         }
-        if (entity instanceof WitherBoss) {
-            for (int i = 0; i < upgradeLevel + 1; i++) {
-                drops.add(Items.NETHER_STAR.getDefaultInstance());
-            }
-        }
+
 
         return drops;
     }

@@ -40,7 +40,7 @@ public class MobData {
     //ideally it should never return nullable
     public static MobData getOrCreate(EntityType<?> type, Level level, BlockPos pos) {
         Mth.getSeed(pos);
-        return getOrCreate(type.getRegistryName(), level, pos);
+        return getOrCreate(Registry.ENTITY_TYPE.getKey(type), level, pos);
     }
 
     public static MobData getOrCreate(ResourceLocation type, Level level, BlockPos pos) {
@@ -187,7 +187,7 @@ public class MobData {
                 scale = maxH / aH;
         }
         //ice&fire dragons
-        String name = mob.getType().getRegistryName().toString();
+        String name = Registry.ENTITY_TYPE.getKey(mob.getType()).toString();
         if (name.equals("iceandfire:fire_dragon") || name.equals("iceandfire:ice_dragon") || name.equals("iceandfire:lightning_dragon")) {
             scale *= 0.45;
         }

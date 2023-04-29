@@ -6,7 +6,6 @@ import net.mehvahdjukaar.cagerium.common.CageriumBlockTile;
 import net.mehvahdjukaar.cagerium.common.MobData;
 import net.mehvahdjukaar.cagerium.common.Tier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -20,7 +19,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ForgeHooksClient;
 
 import java.util.function.Function;
 
@@ -127,11 +125,7 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
     public static void renderBlockState(BlockState state, PoseStack matrixStack, MultiBufferSource buffer,
                                         BlockRenderDispatcher blockRenderer, Level world, BlockPos pos) {
         try {
-            for (RenderType type : RenderType.chunkBufferLayers()) {
-                if (ItemBlockRenderTypes.canRenderInLayer(state, type)) {
-                    renderBlockState(state, matrixStack, buffer, blockRenderer, world, pos, type);
-                }
-            }
+            renderBlockState(state, matrixStack, buffer, blockRenderer, world, pos, RenderType.cutout());
         } catch (Exception ignored) {
         }
     }
@@ -139,12 +133,10 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
     public static void renderBlockState(BlockState state, PoseStack matrixStack, MultiBufferSource buffer,
                                         BlockRenderDispatcher blockRenderer, Level world, BlockPos pos, RenderType type) {
 
-        ForgeHooksClient.setRenderType(type);
         blockRenderer.getModelRenderer().tesselateBlock(world,
                 blockRenderer.getBlockModel(state), state, pos, matrixStack,
                 buffer.getBuffer(type), false, world.random, 0,
                 OverlayTexture.NO_OVERLAY);
-        ForgeHooksClient.setRenderType(null);
     }
 
 }

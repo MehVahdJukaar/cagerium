@@ -1,7 +1,6 @@
 package net.mehvahdjukaar.cagerium;
 
 import net.mehvahdjukaar.cagerium.client.CageBlockTileRenderer;
-import net.mehvahdjukaar.cagerium.client.texture_renderer.RenderedTexturesManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -45,18 +44,6 @@ public class CageriumClient {
 
     }
 
-    @Mod.EventBusSubscriber(modid = Cagerium.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class ClientEvents {
-
-
-        @SubscribeEvent
-        public static void tick(TickEvent.RenderTickEvent event) {
-            if (event.phase == TickEvent.Phase.END) {
-                if (Minecraft.getInstance().level != null)
-                    RenderedTexturesManager.updateTextures();
-            }
-        }
-    }
 
     @SubscribeEvent
     public static void onModelRegistry(ModelEvent.RegisterAdditional event) {

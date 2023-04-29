@@ -4,6 +4,7 @@ import net.mehvahdjukaar.cagerium.Cagerium;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -155,7 +156,7 @@ public class CageriumBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, Random pRandom) {
+    public void animateTick(BlockState pState, Level pLevel, BlockPos pPos, RandomSource pRandom) {
         if (pLevel.getBlockEntity(pPos) instanceof CageriumBlockTile cage && cage.isBurning()) {
             pLevel.addParticle(ParticleTypes.FLAME, pPos.getX() + pRandom.nextFloat(),
                     pPos.getY() + pRandom.nextFloat(), pPos.getZ() + pRandom.nextFloat(), 0, 0, 0);
@@ -163,4 +164,5 @@ public class CageriumBlock extends BaseEntityBlock {
 
 
     }
+
 }

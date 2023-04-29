@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import net.mehvahdjukaar.cagerium.CageriumClient;
-import net.mehvahdjukaar.cagerium.client.texture_renderer.RenderedTexturesManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -34,6 +33,8 @@ public class UpgradeItemRenderer extends BlockEntityWithoutLevelRenderer {
     @Override
     public void renderByItem(ItemStack stack, ItemTransforms.TransformType transformType,
                              PoseStack poseStack, MultiBufferSource buffer, int light, int overlay) {
+
+/*
         //render block
         poseStack.pushPose();
         var tag = stack.getTag();
@@ -84,7 +85,7 @@ public class UpgradeItemRenderer extends BlockEntityWithoutLevelRenderer {
 
 
         }
-
+*/
     }
 }
 

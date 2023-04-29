@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -35,9 +35,9 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -93,8 +93,8 @@ public class CageriumBlockTile extends BlockEntity {
         this.upgradeLevel = compound.getByte("UpgradeLevel");
         if (compound.contains("EntityType")) {
             var res = new ResourceLocation(compound.getString("EntityType"));
-            if (ForgeRegistries.ENTITIES.containsKey(res)) {
-                this.entityType = ForgeRegistries.ENTITIES.getValue(res);
+            if (ForgeRegistries.ENTITY_TYPES.containsKey(res)) {
+                this.entityType = ForgeRegistries.ENTITY_TYPES.getValue(res);
             } else {
                 Cagerium.LOGGER.warn("Found unknown entity type {} when loading cagerium block entity", res);
             }
@@ -120,7 +120,7 @@ public class CageriumBlockTile extends BlockEntity {
         compound.putBoolean("Burning", this.burning);
         compound.putByte("UpgradeLevel", this.upgradeLevel);
         if (this.entityType != null) {
-            compound.putString("EntityType", entityType.getRegistryName().toString());
+            compound.putString("EntityType", ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString());
         }
         //only for block packet
         if (saveItem && this.groundItem != null) {
@@ -182,7 +182,7 @@ public class CageriumBlockTile extends BlockEntity {
                     }
                     return InteractionResult.sidedSuccess(world.isClientSide);
                 } else {
-                    player.displayClientMessage(new TextComponent("Does not fit in here"), true);
+                    player.displayClientMessage(Component.translatable("tooltip.cagerium.does_not_fit"), true);
                     return InteractionResult.sidedSuccess(world.isClientSide);
                 }
             } else if (this.upgradeLevel < 3) {
@@ -267,7 +267,7 @@ public class CageriumBlockTile extends BlockEntity {
 
             BlockEntity tile = level.getBlockEntity(this.worldPosition.below());
             if (tile != null) {
-                IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).orElse(null);
+                IItemHandler itemHandler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).orElse(null);
                 if (itemHandler != null) {
                     var loot = this.createDropsList(livingEntity);
 
@@ -306,7 +306,7 @@ public class CageriumBlockTile extends BlockEntity {
 
         LootTable loottable;
         var tables = this.level.getServer().getLootTables();
-        var type = entity.getType().getRegistryName();
+        var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
         loottable = tables.get(new ResourceLocation(type.getNamespace(), Cagerium.MOD_ID + "/" + type.getPath()));
 
         if (loottable == LootTable.EMPTY) {

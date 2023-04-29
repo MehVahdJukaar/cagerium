@@ -14,5 +14,6 @@
   "item.cagerium.capacity_upgrade": "Capacity Upgrade",
   "tooltip.cagerium.burning": "Burning Upgrade",
   "tooltip.cagerium.upgrade": "Capacity Upgrade: %s",
-  "tooltip.cagerium.invalid": "Invalid"
+  "tooltip.cagerium.invalid": "Invalid",
+  "tooltip.cagerium.does_not_fit": "Does not fit in here"
 }

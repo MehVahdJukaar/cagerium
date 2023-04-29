@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 
 public class UpgradeItemRenderer extends BlockEntityWithoutLevelRenderer {
@@ -45,7 +45,7 @@ public class UpgradeItemRenderer extends BlockEntityWithoutLevelRenderer {
                 poseStack.last(), buffer.getBuffer(Sheets.cutoutBlockSheet()), null,
                 blockRenderer.getBlockModelShaper().getModelManager().getModel(CageriumClient.UPGRADE_BASE),
                 1.0F, 1.0F, 1.0F,
-                light, overlay, EmptyModelData.INSTANCE);
+                light, overlay, ModelData.EMPTY, RenderType.translucent());
 
         poseStack.popPose();
 

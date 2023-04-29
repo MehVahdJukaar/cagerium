@@ -28,8 +28,9 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.IShapedRecipe;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
     static int MAX_WIDTH = 3;
@@ -154,7 +155,8 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         for (int i = 0; i < pInv.getContainerSize(); ++i) {
             var stack = pInv.getItem(i);
             if(stack.getItem() instanceof SpawnEggItem spawnEggItem){
-                res.getOrCreateTag().putString("EntityType", spawnEggItem.getType(stack.getTag()).getRegistryName().toString());
+                res.getOrCreateTag().putString("EntityType",
+                        ForgeRegistries.ENTITY_TYPES.getKey(spawnEggItem.getType(stack.getTag())).toString());
             }
         }
         return res;
@@ -241,11 +243,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
 
     public boolean isIncomplete() {
         NonNullList<Ingredient> nonnulllist = this.getIngredients();
-        return nonnulllist.isEmpty() || nonnulllist.stream().filter((p_151277_) -> {
-            return !p_151277_.isEmpty();
-        }).anyMatch((p_151273_) -> {
-            return net.minecraftforge.common.ForgeHooks.hasNoElements(p_151273_);
-        });
+        return nonnulllist.isEmpty() || nonnulllist.stream().filter((p_151277_) -> !p_151277_.isEmpty()).anyMatch(ForgeHooks::hasNoElements);
     }
 
     private static int firstNonSpace(String pEntry) {
@@ -326,7 +324,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         }
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SpawnEggShapedRecipe> {
+    public static class Serializer implements RecipeSerializer<SpawnEggShapedRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation("minecraft", "crafting_shaped");
         public SpawnEggShapedRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
             String s = GsonHelper.getAsString(pJson, "group", "");

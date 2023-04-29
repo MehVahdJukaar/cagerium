@@ -1,18 +1,16 @@
 package net.mehvahdjukaar.cagerium.common;
 
 import net.mehvahdjukaar.cagerium.CageriumClient;
-import net.mehvahdjukaar.cagerium.client.CageItemRenderer;
 import net.mehvahdjukaar.cagerium.client.UpgradeItemRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -37,13 +35,13 @@ public class UpgradeItem extends Item {
             }
         }
         if (!hasMob) {
-            pTooltipComponents.add(new TranslatableComponent("tooltip.cagerium.invalid").withStyle(ChatFormatting.GRAY));
+            pTooltipComponents.add(Component.translatable("tooltip.cagerium.invalid").withStyle(ChatFormatting.GRAY));
         }
     }
 
 
     @Override
-    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         CageriumClient.registerISTER(consumer, UpgradeItemRenderer::new);
     }
 }

@@ -6,6 +6,7 @@
     "minecraft:elder_guardian",
     "minecraft:iron_golem",
     "minecraft:ravager",
+    "minecraft:warden",
     {
       "required": false,
       "id": "aquamirae:maze_mother"

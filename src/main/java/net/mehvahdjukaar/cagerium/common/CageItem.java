@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.mehvahdjukaar.cagerium.CageriumClient;
 import net.mehvahdjukaar.cagerium.client.CageItemRenderer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.common.util.NonNullLazy;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -37,7 +39,7 @@ public class CageItem extends BlockItem {
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
         var c = pStack.getTagElement("BlockEntityTag");
-        if( InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(),  Minecraft.getInstance().options.keyShift.getKey().getValue())){
+        if( isKeyDown(Minecraft.getInstance().options.keyShift)){
             pTooltip.add(new TextComponent("aaaa"));
         }
 
@@ -65,6 +67,20 @@ public class CageItem extends BlockItem {
         CageriumClient.registerISTER(consumer, CageItemRenderer::new);
     }
 
-
-
+    private static boolean isKeyDown(KeyMapping keyBinding) {
+        InputConstants.Key key = keyBinding.getKey();
+        int keyCode = key.getValue();
+        if (keyCode != InputConstants.UNKNOWN.getValue()) {
+            long windowHandle = Minecraft.getInstance().getWindow().getWindow();
+            try {
+                if (key.getType() == InputConstants.Type.KEYSYM) {
+                    return InputConstants.isKeyDown(windowHandle, keyCode);
+                } else if (key.getType() == InputConstants.Type.MOUSE) {
+                    return GLFW.glfwGetMouseButton(windowHandle, keyCode) == GLFW.GLFW_PRESS;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return false;
+    }
 }

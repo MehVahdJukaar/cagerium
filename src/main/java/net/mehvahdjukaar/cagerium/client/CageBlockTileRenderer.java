@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.cagerium.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.mehvahdjukaar.cagerium.common.CageriumBlockTile;
 import net.mehvahdjukaar.cagerium.common.MobData;
 import net.mehvahdjukaar.cagerium.common.Tier;
@@ -83,7 +83,7 @@ public class CageBlockTileRenderer<T extends CageriumBlockTile> implements Block
 
         Entity entity0 = data0.getEntity();
 
-        poseStack.mulPose(Vector3f.YN.rotationDegrees(direction.toYRot() + ((entity0 instanceof EnderDragon) ? 180 : 0)));
+        poseStack.mulPose(Axis.YN.rotationDegrees(direction.toYRot() + ((entity0 instanceof EnderDragon) ? 180 : 0)));
         float d = 0.2325f;
         switch (level) {
             default -> renderMob(partialTicks, poseStack, bufferIn, combinedLightIn, entity0, s, renderDispatcher);

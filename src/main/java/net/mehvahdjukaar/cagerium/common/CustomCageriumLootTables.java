@@ -15,7 +15,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-
+/*
 public class CustomCageriumLootTables extends SimpleJsonResourceReloadListener {
 
     private static final Gson GSON = Deserializers.createLootTableSerializer().create();
@@ -26,9 +26,9 @@ public class CustomCageriumLootTables extends SimpleJsonResourceReloadListener {
         return TABLES.get(Registry.ENTITY_TYPE.getKey(type));
     }
 
-    private final PredicateManager predicateManager;
+    private final Object predicateManager;
 
-    public CustomCageriumLootTables(PredicateManager predicateManager) {
+    public CustomCageriumLootTables(Object predicateManager) {
         super(GSON, Cagerium.MOD_ID);
         this.predicateManager = predicateManager;
     }
@@ -59,3 +59,4 @@ public class CustomCageriumLootTables extends SimpleJsonResourceReloadListener {
 
 
 }
+*/

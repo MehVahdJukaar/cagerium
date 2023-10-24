@@ -7,15 +7,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import net.mehvahdjukaar.cagerium.Cagerium;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -24,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -32,13 +28,20 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
     static int MAX_WIDTH = 3;
     static int MAX_HEIGHT = 3;
+
     /**
      * Expand the max width and height allowed in the deserializer.
      * This should be called by modders who add custom crafting tables that are larger than the vanilla 3x3.
-     * @param width your max recipe width
+     *
+     * @param width  your max recipe width
      * @param height your max recipe height
      */
     public static void setCraftingSize(int width, int height) {
@@ -81,7 +84,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
      * Get the result of this recipe, usually for display purposes (e.g. recipe book). If your recipe has more than one
      * possible result (e.g. it's dynamic and depends on its inputs), then return an empty stack.
      */
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
         return this.result;
     }
 
@@ -100,8 +103,8 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
      * Used to check if a recipe matches current crafting inventory
      */
     public boolean matches(CraftingContainer pInv, Level pLevel) {
-        for(int i = 0; i <= pInv.getWidth() - this.width; ++i) {
-            for(int j = 0; j <= pInv.getHeight() - this.height; ++j) {
+        for (int i = 0; i <= pInv.getWidth() - this.width; ++i) {
+            for (int j = 0; j <= pInv.getHeight() - this.height; ++j) {
                 if (this.matches(pInv, i, j, true)) {
                     return true;
                 }
@@ -119,14 +122,15 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
      * Checks if the region of a crafting inventory is match for the recipe.
      */
     private boolean matches(CraftingContainer pCraftingInventory, int pWidth, int pHeight, boolean pMirrored) {
-        for(int i = 0; i < pCraftingInventory.getWidth(); ++i) {
-            for(int j = 0; j < pCraftingInventory.getHeight(); ++j) {
+        for (int i = 0; i < pCraftingInventory.getWidth(); ++i) {
+            for (int j = 0; j < pCraftingInventory.getHeight(); ++j) {
                 int k = i - pWidth;
                 int l = j - pHeight;
                 Ingredient ingredient = Ingredient.EMPTY;
                 if (k >= 0 && l >= 0 && k < this.width && l < this.height) {
                     if (pMirrored) {
-                        ingredient = this.recipeItems.get(this.width - k - 1 + l * this.width);;
+                        ingredient = this.recipeItems.get(this.width - k - 1 + l * this.width);
+                        ;
                     } else {
                         ingredient = this.recipeItems.get(k + l * this.width);
                     }
@@ -135,10 +139,10 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
 
                 var itemInInv = pCraftingInventory.getItem(i + j * pCraftingInventory.getWidth());
                 //if both are eggs we found our egg
-                if(itemInInv.getItem() instanceof SpawnEggItem){
-                    if(!(Arrays.stream(ingredient.getItems()).findFirst().get().getItem() instanceof SpawnEggItem)) return false;
-                }
-                else if (!ingredient.test(itemInInv)) {
+                if (itemInInv.getItem() instanceof SpawnEggItem) {
+                    if (!(Arrays.stream(ingredient.getItems()).findFirst().get().getItem() instanceof SpawnEggItem))
+                        return false;
+                } else if (!ingredient.test(itemInInv)) {
                     return false;
                 }
             }
@@ -150,11 +154,11 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
     /**
      * Returns an Item that is the result of this recipe
      */
-    public ItemStack assemble(CraftingContainer pInv) {
-        var res = this.getResultItem().copy();
+    public ItemStack assemble(CraftingContainer pInv, RegistryAccess registryAccess) {
+        var res = this.getResultItem(registryAccess).copy();
         for (int i = 0; i < pInv.getContainerSize(); ++i) {
             var stack = pInv.getItem(i);
-            if(stack.getItem() instanceof SpawnEggItem spawnEggItem){
+            if (stack.getItem() instanceof SpawnEggItem spawnEggItem) {
                 res.getOrCreateTag().putString("EntityType",
                         ForgeRegistries.ENTITY_TYPES.getKey(spawnEggItem.getType(stack.getTag())).toString());
             }
@@ -185,8 +189,8 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         Set<String> set = Sets.newHashSet(pKeys.keySet());
         set.remove(" ");
 
-        for(int i = 0; i < pPattern.length; ++i) {
-            for(int j = 0; j < pPattern[i].length(); ++j) {
+        for (int i = 0; i < pPattern.length; ++i) {
+            for (int j = 0; j < pPattern[i].length(); ++j) {
                 String s = pPattern[i].substring(j, j + 1);
                 Ingredient ingredient = pKeys.get(s);
                 if (ingredient == null) {
@@ -212,7 +216,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         int k = 0;
         int l = 0;
 
-        for(int i1 = 0; i1 < pToShrink.length; ++i1) {
+        for (int i1 = 0; i1 < pToShrink.length; ++i1) {
             String s = pToShrink[i1];
             i = Math.min(i, firstNonSpace(s));
             int j1 = lastNonSpace(s);
@@ -233,7 +237,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         } else {
             String[] astring = new String[pToShrink.length - l - k];
 
-            for(int k1 = 0; k1 < astring.length; ++k1) {
+            for (int k1 = 0; k1 < astring.length; ++k1) {
                 astring[k1] = pToShrink[k1 + k].substring(i, j + 1);
             }
 
@@ -248,7 +252,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
 
     private static int firstNonSpace(String pEntry) {
         int i;
-        for(i = 0; i < pEntry.length() && pEntry.charAt(i) == ' '; ++i) {
+        for (i = 0; i < pEntry.length() && pEntry.charAt(i) == ' '; ++i) {
         }
 
         return i;
@@ -256,7 +260,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
 
     private static int lastNonSpace(String pEntry) {
         int i;
-        for(i = pEntry.length() - 1; i >= 0 && pEntry.charAt(i) == ' '; --i) {
+        for (i = pEntry.length() - 1; i >= 0 && pEntry.charAt(i) == ' '; --i) {
         }
 
         return i;
@@ -269,7 +273,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         } else if (astring.length == 0) {
             throw new JsonSyntaxException("Invalid pattern: empty pattern not allowed");
         } else {
-            for(int i = 0; i < astring.length; ++i) {
+            for (int i = 0; i < astring.length; ++i) {
                 String s = GsonHelper.convertToString(pPatternArray.get(i), "pattern[" + i + "]");
                 if (s.length() > MAX_WIDTH) {
                     throw new JsonSyntaxException("Invalid pattern: too many columns, " + MAX_WIDTH + " is maximum");
@@ -292,9 +296,9 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
     static Map<String, Ingredient> keyFromJson(JsonObject pKeyEntry) {
         Map<String, Ingredient> map = Maps.newHashMap();
 
-        for(Entry<String, JsonElement> entry : pKeyEntry.entrySet()) {
+        for (Entry<String, JsonElement> entry : pKeyEntry.entrySet()) {
             if (entry.getKey().length() != 1) {
-                throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
+                throw new JsonSyntaxException("Invalid key entry: '" + (String) entry.getKey() + "' is an invalid symbol (must be 1 character only).");
             }
 
             if (" ".equals(entry.getKey())) {
@@ -314,7 +318,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
 
     public static Item itemFromJson(JsonObject pItemObject) {
         String s = GsonHelper.getAsString(pItemObject, "item");
-        Item item = Registry.ITEM.getOptional(new ResourceLocation(s)).orElseThrow(() -> {
+        Item item = BuiltInRegistries.ITEM.getOptional(new ResourceLocation(s)).orElseThrow(() -> {
             return new JsonSyntaxException("Unknown item '" + s + "'");
         });
         if (item == Items.AIR) {
@@ -324,8 +328,14 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
         }
     }
 
+    @Override
+    public CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
+    }
+
     public static class Serializer implements RecipeSerializer<SpawnEggShapedRecipe> {
         private static final ResourceLocation NAME = new ResourceLocation("minecraft", "crafting_shaped");
+
         public SpawnEggShapedRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
             String s = GsonHelper.getAsString(pJson, "group", "");
             Map<String, Ingredient> map = SpawnEggShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(pJson, "key"));
@@ -343,7 +353,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
             String s = pBuffer.readUtf();
             NonNullList<Ingredient> nonnulllist = NonNullList.withSize(i * j, Ingredient.EMPTY);
 
-            for(int k = 0; k < nonnulllist.size(); ++k) {
+            for (int k = 0; k < nonnulllist.size(); ++k) {
                 nonnulllist.set(k, Ingredient.fromNetwork(pBuffer));
             }
 
@@ -356,7 +366,7 @@ public class SpawnEggShapedRecipe implements CraftingRecipe, IShapedRecipe<Craft
             pBuffer.writeVarInt(pRecipe.height);
             pBuffer.writeUtf(pRecipe.group);
 
-            for(Ingredient ingredient : pRecipe.recipeItems) {
+            for (Ingredient ingredient : pRecipe.recipeItems) {
                 ingredient.toNetwork(pBuffer);
             }
 

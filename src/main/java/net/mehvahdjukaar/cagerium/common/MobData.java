@@ -9,6 +9,8 @@ import net.mehvahdjukaar.cagerium.mixins.FoxInvoker;
 import net.mehvahdjukaar.cagerium.mixins.SlimeInvoker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AgeableMob;
@@ -39,8 +41,7 @@ public class MobData {
 
     //ideally it should never return nullable
     public static MobData getOrCreate(EntityType<?> type, Level level, BlockPos pos) {
-        Mth.getSeed(pos);
-        return getOrCreate(Registry.ENTITY_TYPE.getKey(type), level, pos);
+        return getOrCreate(BuiltInRegistries.ENTITY_TYPE.getKey(type), level, pos);
     }
 
     public static MobData getOrCreate(ResourceLocation type, Level level, BlockPos pos) {
@@ -48,7 +49,7 @@ public class MobData {
         if (en != null) {
             return en;
         } else {
-            var entity = Registry.ENTITY_TYPE.getOptional(type);
+            var entity = BuiltInRegistries.ENTITY_TYPE.getOptional(type);
             if (entity.isPresent()) {
                 var m = create(entity.get(), level);
                 MOB_CACHE.get().put(type, m);
@@ -67,9 +68,6 @@ public class MobData {
         if (entity instanceof LivingEntity le) {
             le.yHeadRotO = 0;
             le.yHeadRot = 0;
-            le.animationSpeed = 0;
-            le.animationSpeedOld = 0;
-            le.animationPosition = 0;
             le.hurtDuration = 0;
             le.hurtTime = 0;
             le.attackAnim = 0;
@@ -187,7 +185,7 @@ public class MobData {
                 scale = maxH / aH;
         }
         //ice&fire dragons
-        String name = Registry.ENTITY_TYPE.getKey(mob.getType()).toString();
+        String name = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()).toString();
         if (name.equals("iceandfire:fire_dragon") || name.equals("iceandfire:ice_dragon") || name.equals("iceandfire:lightning_dragon")) {
             scale *= 0.45;
         }

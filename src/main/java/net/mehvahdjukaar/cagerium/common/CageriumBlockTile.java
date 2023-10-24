@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -305,25 +306,25 @@ public class CageriumBlockTile extends BlockEntity {
 
 
         LootTable loottable;
-        var tables = this.level.getServer().getLootTables();
+        var tables = this.level.getServer().getLootData();
         var type = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
-        loottable = tables.get(new ResourceLocation(type.getNamespace(), Cagerium.MOD_ID + "/" + type.getPath()));
+        loottable = tables.getLootTable(new ResourceLocation(type.getNamespace(), Cagerium.MOD_ID + "/" + type.getPath()));
 
         if (loottable == LootTable.EMPTY) {
-            loottable = tables.get(entity.getLootTable());
+            loottable = tables.getLootTable(entity.getLootTable());
         }
 
-        LootContext.Builder builder = (new LootContext.Builder((ServerLevel) this.level))
-                .withRandom(this.level.getRandom())
+        LootParams.Builder builder = (new LootParams.Builder((ServerLevel) this.level))
                 .withParameter(LootContextParams.THIS_ENTITY, entity)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition))
-                .withParameter(LootContextParams.DAMAGE_SOURCE, this.burning ? DamageSource.ON_FIRE : DamageSource.GENERIC)
+                .withParameter(LootContextParams.DAMAGE_SOURCE, this.burning ? this.level.damageSources().onFire():
+                        this.level.damageSources().generic())
                 .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
                 .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player)
                 .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
                 .withLuck(player.getLuck());
 
-        LootContext ctx = builder.create(LootContextParamSets.ENTITY);
+        LootParams ctx = builder.create(LootContextParamSets.ENTITY);
 
         for (int i = 0; i < upgradeLevel + 1; i++) {
             if (entity instanceof WitherBoss) {

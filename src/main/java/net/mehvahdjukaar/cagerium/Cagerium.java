@@ -2,23 +2,25 @@ package net.mehvahdjukaar.cagerium;
 
 import net.mehvahdjukaar.cagerium.common.*;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -36,8 +38,8 @@ public class Cagerium {
     public static final String MOD_ID = "cagerium";
 
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, res("bosses"));
-    public static final TagKey<EntityType<?>> BLACKLIST = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, res("cagerium_blacklist"));
+    public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, res("bosses"));
+    public static final TagKey<EntityType<?>> BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, res("cagerium_blacklist"));
 
     public static ResourceLocation res(String n) {
         return new ResourceLocation(MOD_ID, n);
@@ -77,12 +79,31 @@ public class Cagerium {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SERVER_SPEC);
 
         MinecraftForge.EVENT_BUS.addListener(Cagerium::addReloadListener);
+        MinecraftForge.EVENT_BUS.addListener(Cagerium::addItemsToTabs);
+
 
         //TODO: water in terrarium
     }
 
     public static void addReloadListener(AddReloadListenerEvent event) {
-        // event.addListener(new CustomCageriumLootTables(event.getServerResources().getPredicateManager()));
+        // event.addListener(new CustomCageriumLootTables(event.getServerResources().getRecipeManager()));
+    }
+
+    public static void addItemsToTabs(BuildCreativeModeTabContentsEvent event){
+        if(event.getTabKey().equals(CreativeModeTabs.INGREDIENTS)){
+            event.accept(TERRARIUM_BASE);
+            event.accept(CAGE_BASE);
+            event.accept(PLATE_GEM);
+        }
+        if(event.getTabKey().equals(CreativeModeTabs.FUNCTIONAL_BLOCKS)){
+            event.accept(TERRARIUM_ITEM);
+            event.accept(CAGE_ITEM);
+            event.accept(PLATE_ITEM);
+        }
+        if(event.getTabKey().equals(CreativeModeTabs.TOOLS_AND_UTILITIES)){
+            event.accept(CAGE_KEY);
+            event.accept(FIRE_UPGRADE);
+        }
     }
 
     public static final RegistryObject<RecipeSerializer<?>> UPGRADE_RECIPE = RECIPES.register(
@@ -91,7 +112,7 @@ public class Cagerium {
     public static final String CAGE_NAME = "cage";
 
     public static final RegistryObject<Block> CAGE = BLOCKS.register(CAGE_NAME, () -> new CageriumBlock(
-            BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL)
+            BlockBehaviour.Properties.copy(Blocks.HOPPER)
                     .strength(3f, 6f)
                     .isViewBlocking((s, p, l) -> false)
                     .noOcclusion()
@@ -100,18 +121,18 @@ public class Cagerium {
     ));
 
     public static final RegistryObject<Item> CAGE_ITEM = ITEMS.register(CAGE_NAME, () -> new CageItem(CAGE.get(),
-            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.RARE)));
+            new Item.Properties().rarity(Rarity.RARE)));
 
     public static final RegistryObject<Item> CAGE_KEY = ITEMS.register("skeleton_key", () -> new SkeletonKeyItem(
-            new Item.Properties().tab(CreativeModeTab.TAB_MISC).rarity(Rarity.RARE)));
+            new Item.Properties().rarity(Rarity.RARE)));
 
     public static final RegistryObject<Item> CAGE_BASE = ITEMS.register("ominous_skull", () -> new Item(
-            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.RARE)));
+            new Item.Properties().rarity(Rarity.RARE)));
 
     public static final String TERRARIUM_NAME = "terrarium";
 
     public static final RegistryObject<Block> TERRARIUM = BLOCKS.register(TERRARIUM_NAME, () -> new CageriumBlock(
-            BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL)
+            BlockBehaviour.Properties.copy(Blocks.GLASS)
                     .strength(2f, 4f)
                     .isViewBlocking((s, p, l) -> false)
                     .noOcclusion()
@@ -120,16 +141,16 @@ public class Cagerium {
     ));
 
     public static final RegistryObject<Item> TERRARIUM_ITEM = ITEMS.register(TERRARIUM_NAME, () -> new CageItem(TERRARIUM.get(),
-            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.RARE)));
+            new Item.Properties().rarity(Rarity.RARE)));
 
     public static final RegistryObject<Item> TERRARIUM_BASE = ITEMS.register("binding_wood_plate", () -> new Item(
-            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.RARE)));
+            new Item.Properties().rarity(Rarity.RARE)));
 
 
     public static final String PLATE_NAME = "plate";
 
     public static final RegistryObject<Block> PLATE = BLOCKS.register(PLATE_NAME, () -> new CageriumBlock(
-            BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL)
+            BlockBehaviour.Properties.copy(Blocks.LODESTONE)
                     .strength(3f, 6f)
                     .isViewBlocking((s, p, l) -> false)
                     .noOcclusion()
@@ -138,10 +159,10 @@ public class Cagerium {
     ));
 
     public static final RegistryObject<Item> PLATE_ITEM = ITEMS.register(PLATE_NAME, () -> new CageItem(PLATE.get(),
-            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS).rarity(Rarity.EPIC)));
+            new Item.Properties().rarity(Rarity.EPIC)));
 
     public static final RegistryObject<Item> PLATE_GEM = ITEMS.register("binding_gemstone", () -> new Item(
-            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS).rarity(Rarity.EPIC)));
+            new Item.Properties().rarity(Rarity.EPIC)));
 
 
     public static final RegistryObject<BlockEntityType<CageriumBlockTile>> TILE = TILES.register("cagerium", () -> BlockEntityType.Builder.of(
@@ -149,22 +170,11 @@ public class Cagerium {
 
 
     public static final RegistryObject<Item> FIRE_UPGRADE = ITEMS.register("burning_upgrade", () -> new Item(
-            new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS)));
+            new Item.Properties()));
 
     //public static final RegistryObject<Item> CAGE_UPGRADE = ITEMS.register("capacity_upgrade", () -> new UpgradeItem(
     //        new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS)));
 
-    public static final RegistryObject<Item> IRON_GOLEM_SPAWN_EGG = ITEMS.register("iron_golem" + "_spawn_egg", () ->
-            new ForgeSpawnEggItem(() -> EntityType.IRON_GOLEM, 0xC4C3C4, 0xFCFCFC,
-                    new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
-
-    public static final RegistryObject<Item> WITHER_SPAWN_EGG = ITEMS.register("wither" + "_spawn_egg", () ->
-            new ForgeSpawnEggItem(() -> EntityType.WITHER, 0x131313, 0xC3F6E8,
-                    new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
-
-    public static final RegistryObject<Item> ENDER_DRAGON_SPAWN_EGG = ITEMS.register("ender_dragon" + "_spawn_egg", () ->
-            new ForgeSpawnEggItem(() -> EntityType.ENDER_DRAGON, 0x121212, 0xA82BC5,
-                    new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
 
 
 }
